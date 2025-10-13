@@ -21,7 +21,7 @@ class FeatureExtractors(torch.nn.Module):
         layers_keep = 12
 
         ## RGB backbone
-        self.rgb_backbone = timm.create_model(model_name = rgb_backbone_name, pretrained = True, **kwargs)
+        self.rgb_backbone = timm.create_model(model_name = rgb_backbone_name, pretrained = False, **kwargs)
         # ! Use only the first k blocks.
         self.rgb_backbone.blocks = torch.nn.Sequential(*self.rgb_backbone.blocks[:layers_keep]) # Remove Block(s) from 5 to 11.
 
