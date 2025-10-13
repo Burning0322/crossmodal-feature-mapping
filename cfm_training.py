@@ -131,7 +131,7 @@ def train_CFM(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'Train Crossmodal Feature Networks (CFMs) on a dataset.')
 
-    parser.add_argument('--dataset_path', default = './datasets/mvtec3d', type = str, 
+    parser.add_argument('--dataset_path', default = '/kaggle/input/mvtec-3d-anomaly-detection', type = str,
                         help = 'Dataset path.')
 
     parser.add_argument('--checkpoint_savepath', default = './checkpoints/checkpoints_CFM_mvtec', type = str, 
