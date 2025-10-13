@@ -3,6 +3,7 @@ import torch.nn as nn
 import timm
 from timm.models.layers import DropPath
 from pointnet2_ops import pointnet2_utils
+from pathlib import Path
 
 class FeatureExtractors(torch.nn.Module):
     def __init__(self, device, 
@@ -22,6 +23,11 @@ class FeatureExtractors(torch.nn.Module):
 
         ## RGB backbone
         self.rgb_backbone = timm.create_model(model_name = rgb_backbone_name, pretrained = False, **kwargs)
+
+        load_pre_model = Path("pretrainmodel/model.safetensors")
+        state = torch.load(load_pre_model, map_location = device)
+        self.rgb_backbone.load_state_dict(state, strict = False)
+
         # ! Use only the first k blocks.
         self.rgb_backbone.blocks = torch.nn.Sequential(*self.rgb_backbone.blocks[:layers_keep]) # Remove Block(s) from 5 to 11.
 
