@@ -5,11 +5,19 @@ from timm.models.layers import DropPath
 from pointnet2_ops import pointnet2_utils
 from pathlib import Path
 
+# local safetensors loading (no HF download)
+try:
+    from safetensors.torch import load_file as safe_load
+except Exception:
+    safe_load = None
+import os
+
+
 class FeatureExtractors(torch.nn.Module):
-    def __init__(self, device, 
+    def __init__(self, device,
                  rgb_backbone_name = 'vit_base_patch8_224_dino.dino', out_indices = None,
                  group_size = 128, num_group = 1024):
-        
+
         super().__init__()
 
         self.device = device
@@ -25,8 +33,38 @@ class FeatureExtractors(torch.nn.Module):
         self.rgb_backbone = timm.create_model(model_name = rgb_backbone_name, pretrained = False, **kwargs)
 
         load_pre_model = Path("pretrainmodel/model.safetensors")
-        state = torch.load(load_pre_model, map_location = device)
-        self.rgb_backbone.load_state_dict(state, strict = False)
+        if not load_pre_model.exists():
+            print(f"[RGB] local weight not found: {load_pre_model}. Using randomly initialized backbone.")
+        else:
+            # Support both .safetensors and .pt/.pth
+            if load_pre_model.suffix == ".safetensors":
+                assert safe_load is not None, "Please `pip install safetensors` to load .safetensors weights."
+                state = safe_load(str(load_pre_model))  # returns a plain state_dict
+            else:
+                # Torch 2.6 defaults to weights_only=True; here we explicitly disable it for legacy checkpoints.
+                # Only do this if the file is trusted.
+                state = torch.load(str(load_pre_model), map_location=device, weights_only=False)
+
+            # Unwrap common containers: {'state_dict': {...}}, {'model': {...}}, etc.
+            if isinstance(state, dict):
+                for key in ("state_dict", "model", "weights", "params"):
+                    if key in state and isinstance(state[key], dict):
+                        state = state[key]
+                        break
+
+            # Normalize common prefixes so keys match timm backbone
+            normalized = {}
+            for k, v in state.items():
+                nk = k
+                for pref in ("module.", "model.", "backbone."):
+                    if nk.startswith(pref):
+                        nk = nk[len(pref):]
+                normalized[nk] = v
+
+            incompatible = self.rgb_backbone.load_state_dict(normalized, strict=False)
+            missing = getattr(incompatible, "missing_keys", [])
+            unexpected = getattr(incompatible, "unexpected_keys", [])
+            print(f"[RGB] loaded local weights from {load_pre_model} | missing={len(missing)} unexpected={len(unexpected)}")
 
         # ! Use only the first k blocks.
         self.rgb_backbone.blocks = torch.nn.Sequential(*self.rgb_backbone.blocks[:layers_keep]) # Remove Block(s) from 5 to 11.
