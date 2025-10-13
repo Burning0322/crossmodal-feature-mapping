@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multimodal Industrial Anomaly Detection by Crossmodal Feature Mapping</title>
+</head>
+<body>
+<h1 align="center"> Multimodal Industrial Anomaly Detection by Crossmodal Feature Mapping (CVPR 2024) </h1>
+
+<br>
+
+<p>:rotating_light: This repository contains download links to the datasets, code snippets, and checkpoints of our work "<strong>Multimodal Industrial Anomaly Detection by Crossmodal Feature Mapping</strong>", <a href="https://cvpr.thecvf.com/Conferences/2024">CVPR 2024</a></p>
+
+<p>by <a href="https://alex-costanzino.github.io/">Alex Costanzino*</a>, <a href="https://pierlui92.github.io/">Pierluigi Zama Ramirez*</a>, <a href="https://www.unibo.it/sitoweb/giuseppe.lisanti">Giuseppe Lisanti</a>, and <a href="https://www.unibo.it/sitoweb/luigi.distefano">Luigi Di Stefano</a>. * <em>Equal Contribution</em></p>
+
+<p>University of Bologna</p>
+
+<div class="alert alert-info">
+
+<h2 align="center">
+<a href="https://cvlab-unibo.github.io/CrossmodalFeatureMapping/">Project Page</a> | <a href="https://arxiv.org/abs/2312.04521">Paper</a>
+</h2>
+
+<h2 id="bookmark_tabs-table-of-contents">:bookmark_tabs: Table of Contents</h2>
+
+<ol>
+<li><a href="#clapper-introduction">Introduction</a></li>
+<li><a href="#file_cabinet">Datasets</a></li>
+<li><a href="#inbox_tray">Checkpoints</a></li>
+<li><a href="#memo-code">Code</a></li>
+<li><a href="#envelope-contacts">Contacts</a></li>
+</ol>
+
+</div>
+
+<h2 id="clapper-introduction">:clapper: Introduction</h2>
+<p>Recent advancements have shown the potential of leveraging both point clouds and images to localize anomalies.
+Nevertheless, their applicability in industrial manufacturing is often constrained by significant drawbacks, such as the use of memory banks, which lead to a substantial increase in terms of memory footprint and inference time.
+We propose a novel light and fast framework that learns to map features from one modality to the other on nominal samples and detect anomalies by pinpointing inconsistencies between observed and mapped features.
+Extensive experiments show that our approach achieves state-of-the-art detection and segmentation performance, in both the standard and few-shot settings, on the MVTec 3D-AD dataset while achieving faster inference and occupying less memory than previous multimodal AD methods.
+Furthermore, we propose a layer pruning technique to improve memory and time efficiency with a marginal sacrifice in performance.</p>
+
+<h4 align="center"></h4>
+
+<img src="./images/architecture.jpg" alt="Alt text" style="width: 800px;" title="architecture">
+
+<p>:fountain_pen: If you find this code useful in your research, please cite:</p>
+
+<pre><code class="language-bibtex">@inproceedings{costanzino2024cross,
+    title = {Multimodal Industrial Anomaly Detection by Crossmodal Feature Mapping},
+    author = {Costanzino, Alex and Zama Ramirez, Pierluigi and Lisanti, Giuseppe and Di Stefano, Luigi},
+    booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+    note = {CVPR},
+    year = {2024},
+}
+</code></pre>
+
+<h2 id="file_cabinet">:file_cabinet: Datasets</h2>
+
+<p>In our experiments, we employed two datasets featuring rgb images and point clouds: <a href="https://www.mvtec.com/company/research/datasets/mvtec-3d-ad">MVTec 3D-AD</a> and <a href="https://eyecan-ai.github.io/eyecandies/">Eyecandies</a>. You can preprocess them with the scripts contained in <code>processing</code>.</p>
+
+<h2 id="inbox_tray">:inbox_tray: Checkpoints</h2>
+
+<p>Here, you can download the weights of <strong>CFMs</strong> employed in the results of Table 1 and Table 2 of our paper.</p>
+
+<p>To use these weights, please follow these steps:</p>
+
+<ol>
+<li>Create a folder named <code>checkpoints/checkpoints_CFM_mvtec</code> in the project directory;</li>
+<li>Download the weights <a href="https://t.ly/DZ-o1">[Download]</a>;</li>
+<li>Copy the downloaded weights into the <code>checkpoints_CFM_mvtec</code> folder.</li>
+</ol>
+
+<h2 id="memo-code">:memo: Code</h2>
+
+<div class="alert alert-info">
+
+<p><strong>Warning</strong>:</p>
+<ul>
+<li>The code utilizes <code>wandb</code> during training to log results. Please be sure to have a wandb account. Otherwise, if you prefer to not use <code>wandb</code>, disable it in <code>cfm_training.py</code> with the flag <code>mode = 'disabled'</code>.</li>
+</ul>
+
+</div>
+
+<h3 id="hammer_and_wrench-setup-instructions">:hammer_and_wrench: Setup Instructions</h3>
+
+<p><strong>Dependencies</strong>: Ensure that you have installed all the necessary dependencies. The list of dependencies can be found in the <code>./requirements.txt</code> file.</p>
+
+<h3 id="rocket-inference-cfms">:rocket: Inference CFMs</h3>
+
+<p>The <code>cfm_inference.py</code> script tests the CFMs. It can be used to generate anomaly maps.</p>
+
+<p>You can specify the following options:</p>
+<ul>
+<li><code>--dataset_path</code>: Path to the root directory of the dataset.</li>
+<li><code>--checkpoint_folder</code>: Path to the directory of the checkpoints, i.e., <code>checkpoints/checkpoints_CFM_mvtec</code>.</li>
+<li><code>--class_name</code>: Class on which the CFMs was trained.</li>
+<li><code>--epochs_no</code>: Number of epochs used in CFMs optimization.</li>
+<li><code>--batch_size</code>: Number of samples per batch employed for CFMs optimization.</li>
+<li><code>--qualitative_folder</code>: Folder on which the anomaly maps are saved.</li>
+<li><code>--quantitative_folder</code>: Folder on which the metrics are saved.</li>
+<li><code>--visualize_plot</code>: Flag to visualize qualitatived during inference.</li>
+<li><code>--produce_qualitatives</code>: Flag to save qualitatived during inference.</li>
+</ul>
+
+<p>You can reproduce the results of Table 1 and Table 2 of the paper by running <code>02_eval_mvtec.sh</code>.</p>
+
+<p>If you haven't downloaded the checkpoints yet, you can find the download links in the <strong>Checkpoints</strong> section above.</p>
+
+<h3 id="rocket-train-cfms">:rocket: Train CFMs</h3>
+
+<p>To train CFMs refer to the example in <code>01_train_mvtec.sh</code> and <code>03_train_eyecandies.sh</code>.</p>
+
+<p>The <code>cfm_training.py</code> script trains the CFMs.</p>
+
+<p>You can specify the following options:</p>
+<ul>
+<li><code>--dataset_path</code>: Path to the root directory of the dataset.</li>
+<li><code>--checkpoint_savepath</code>: Path to the directory on which checkpoints will be saved, i.e., <code>checkpoints/checkpoints_CFM_mvtec</code>.</li>
+<li><code>--class_name</code>: Class on which the CFMs are trained.</li>
+<li><code>--epochs_no</code>: Number of epochs for CFMs optimization.</li>
+<li><code>--batch_size</code>: Number of samples per batch for CFMs optimization.</li>
+</ul>
+
+<h2 id="envelope-contacts">:envelope: Contacts</h2>
+
+<p>For questions, please send an email to <a href="mailto:alex.costanzino@unibo.it">alex.costanzino@unibo.it</a> or <a href="mailto:pierluigi.zama@unibo.it">pierluigi.zama@unibo.it</a>.</p>
+
+<h2 id="pray-acknowledgements">:pray: Acknowledgements</h2>
+
+<p>We would like to extend our sincere appreciation to the authors of the following projects for making their code available, which we have utilized in our work:</p>
+
+<ul>
+<li>We would like to thank the authors of <a href="https://github.com/nomewang/M3DM">M3DM</a>, <a href="https://github.com/eliahuhorwitz/3D-ADS">3D-ADS</a> and <a href="https://github.com/marco-rudolph/AST">AST</a> for providing their code, which has been instrumental in our experiments.</li>
+</ul>
+
+</body>
+</html>
