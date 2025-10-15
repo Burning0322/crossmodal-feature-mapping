@@ -200,7 +200,7 @@ if __name__ == '__main__':
                                                                                'CandyCane', 'ChocolateCookie', 'ChocolatePraline', 'Confetto', 'GummyBear', 'HazelnutTruffle', 'LicoriceSandwich', 'Lollipop', 'Marshmallow', 'PeppermintCandy'],
                         help = 'Category name.')
     
-    parser.add_argument('--checkpoint_folder', default = '/kaggle/working/crossmodal-feature-mapping/checkpoints/checkpoints_CFM_mvtec', type = str,
+    parser.add_argument('--checkpoint_folder', default = './checkpoints/checkpoints_CFM_mvtec', type = str,
                         help = 'Path to the folder containing CFMs checkpoints.')
 
     parser.add_argument('--qualitative_folder', default = './results/qualitatives_mvtec', type = str,
