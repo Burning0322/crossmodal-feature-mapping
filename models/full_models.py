@@ -32,7 +32,7 @@ class FeatureExtractors(torch.nn.Module):
         ## RGB backbone
         self.rgb_backbone = timm.create_model(model_name = rgb_backbone_name, pretrained = False, **kwargs)
 
-        load_pre_model = Path("pretrainmodel/model.safetensors")
+        load_pre_model = Path("/kaggle/input/pretrainmodel/model.safetensors")
         if not load_pre_model.exists():
             print(f"[RGB] local weight not found: {load_pre_model}. Using randomly initialized backbone.")
         else:
