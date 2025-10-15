@@ -193,7 +193,7 @@ def infer_CFM(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'Make inference with Crossmodal Feature Networks (CFMs) on a dataset.')
 
-    parser.add_argument('--dataset_path', default = '/kaggle/input/mvtec-3d-anomaly-detection', type = str,
+    parser.add_argument('--dataset_path', default = '/kaggle/input/mvtec-3d-anomaly-detection/mvtec_3d_anomaly_detection', type = str,
                         help = 'Dataset path.')
     
     parser.add_argument('--class_name', default = None, type = str, choices = ["bagel", "cable_gland", "carrot", "cookie", "dowel", "foam", "peach", "potato", "rope", "tire",
