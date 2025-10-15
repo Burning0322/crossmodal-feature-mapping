@@ -47,6 +47,12 @@ def train_CFM(args):
 
     optimizer = torch.optim.Adam(params = chain(CFM_2Dto3D.parameters(), CFM_3Dto2D.parameters()))
 
+    if torch.cuda.device_count() > 1:
+        print("✅ Using", torch.cuda.device_count(), "GPUs via DataParallel")
+        CFM_2Dto3D = torch.nn.DataParallel(CFM_2Dto3D)
+        CFM_3Dto2D = torch.nn.DataParallel(CFM_3Dto2D)
+        # DataParallel 默认把输出放在 device 0；输入张量要在 cuda 上
+
     CFM_2Dto3D.to(device), CFM_3Dto2D.to(device)
 
     metric = torch.nn.CosineSimilarity(dim = -1, eps = 1e-06)
