@@ -1,9 +1,9 @@
 export CUDA_VISIBLE_DEVICES=0,1
 
-epochs=100
-batch_size=1
+epochs=50
+batch_size=4
 
-class_names=("bagel" "cable_gland" "carrot" "cookie" "dowel" "foam" "peach" "potato" "rope" "tire")
+class_names=("bagel")
 
 for class_name in "${class_names[@]}"
     do
