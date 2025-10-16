@@ -130,8 +130,12 @@ def train_CFM(args):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    torch.save(CFM_2Dto3D.state_dict(), os.path.join(directory, 'CFM_2Dto3D_' + model_name + '.pth'))
-    torch.save(CFM_3Dto2D.state_dict(), os.path.join(directory, 'CFM_3Dto2D_' + model_name + '.pth'))
+    try:
+        torch.save(CFM_2Dto3D.state_dict(), os.path.join(directory, 'CFM_2Dto3D_' + model_name + '.pth'))
+        torch.save(CFM_3Dto2D.state_dict(), os.path.join(directory, 'CFM_3Dto2D_' + model_name + '.pth'))
+        print(f"✅ Models saved at {directory}.")
+    except:
+        print("❌ Error(s) occurred while saving the models.")
 
 
 if __name__ == '__main__':
