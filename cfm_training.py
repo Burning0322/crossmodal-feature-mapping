@@ -125,7 +125,7 @@ def train_CFM(args):
             })
 
     # Model saving.
-    save_path = "/kaggle/output/checkpoints/checkpoints_CFM_mvtec/"
+    save_path = "/kaggle/output/checkpoints_CFM_mvtec"
     directory = f'{save_path}/{args.class_name}'
 
     if not os.path.exists(directory):
