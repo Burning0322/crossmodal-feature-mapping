@@ -144,7 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset_path', default = '/kaggle/input/mvtec-3d-anomaly-detection/mvtec_3d_anomaly_detection', type = str,
                         help = 'Dataset path.')
 
-    parser.add_argument('--checkpoint_savepath', default = '/kaggle/output/checkpoints/checkpoints_CFM_mvtec', type = str,
+    parser.add_argument('--checkpoint_savepath', default = '/kaggle/input/checkpoints/checkpoints_CFM_mvtec', type = str,
                         help = 'Where to save the model checkpoints.')
     
     parser.add_argument('--class_name', default = None, type = str, choices = ["bagel", "cable_gland", "carrot", "cookie", "dowel", "foam", "peach", "potato", "rope", "tire",
