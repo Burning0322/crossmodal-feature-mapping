@@ -125,7 +125,7 @@ def train_CFM(args):
             })
 
     # Model saving.
-    directory = f'{args.checkpoint_savepath}/{args.class_name}'
+    directory = f'{'/kaggle/output/checkpoints/checkpoints_CFM_mvtec'}/{args.class_name}'
 
     if not os.path.exists(directory):
         os.makedirs(directory)
