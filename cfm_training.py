@@ -1,14 +1,11 @@
 import argparse
-
 import os
 import torch
 import wandb
-
+import shutil
 import numpy as np
 from itertools import chain
-
 from tqdm import tqdm, trange
-
 from models.features import MultimodalFeatures
 from models.dataset import get_data_loader
 from models.feature_transfer_nets import FeatureProjectionMLP, FeatureProjectionMLP_big
@@ -125,7 +122,7 @@ def train_CFM(args):
             })
 
     # Model saving.
-    save_path = "/kaggle/output/checkpoints_CFM_mvtec"
+    save_path = "/kaggle/working/checkpoints_CFM_mvtec"
     directory = f'{save_path}/{args.class_name}'
 
     if not os.path.exists(directory):
