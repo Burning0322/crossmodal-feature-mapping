@@ -1,6 +1,6 @@
 export CUDA_VISIBLE_DEVICES=0,1
 
-epochs=50
+epochs=100
 batch_size=2
 
 class_names=("bagel")
