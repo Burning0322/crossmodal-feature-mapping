@@ -4,7 +4,7 @@ epochs=50
 batch_size=2
 
 #"bagel" "cable_gland" "carrot" "cookie" "dowel" "foam" "peach" "potato" "rope" "tire"
-class_names=("carrot")
+class_names=("bagel")
 
 for class_name in "${class_names[@]}"
     do
