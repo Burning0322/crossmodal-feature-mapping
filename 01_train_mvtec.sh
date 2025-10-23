@@ -1,6 +1,6 @@
 export CUDA_VISIBLE_DEVICES=0,1
 
-epochs=100
+epochs=50
 batch_size=2
 
 #"bagel" "cable_gland" "carrot" "cookie" "dowel" "foam" "peach" "potato" "rope" "tire"
