@@ -45,6 +45,44 @@ def infer_CFM(args):
     CFM_2Dto3D.load_state_dict(torch.load(CFM_2Dto3D_path))
     CFM_3Dto2D.load_state_dict(torch.load(CFM_3Dto2D_path))
 
+    # ---------- [Load pretrained CFMs explicitly] ----------
+    import re
+
+    def load_cfm(model, path):
+        print(f"[CFM] Loading checkpoint: {path}")
+        state = torch.load(path, map_location='cpu')
+
+        # 兼容各种保存形式
+        if isinstance(state, dict) and 'state_dict' in state:
+            state = state['state_dict']
+
+        # 去掉 DataParallel 的前缀
+        new_state = { re.sub(r'^module\.', '', k): v for k, v in state.items() }
+
+        missing, unexpected = model.load_state_dict(new_state, strict=False)
+        print(f"[CFM] missing={len(missing)} unexpected={len(unexpected)}")
+        if len(missing) > 50:
+            print("[警告] 载入的权重层数不匹配，可能方向(2Dto3D/3Dto2D)或结构错误。")
+        return model
+
+    CFM_2Dto3D_path = rf'{args.checkpoint_folder}/{args.class_name}/CFM_2Dto3D_{args.class_name}_{args.epochs_no}ep_{args.batch_size}bs.pth'
+    CFM_3Dto2D_path = rf'{args.checkpoint_folder}/{args.class_name}/CFM_3Dto2D_{args.class_name}_{args.epochs_no}ep_{args.batch_size}bs.pth'
+
+    # 如果用户指定了 --ckpt_path，则只载入那个文件
+    if getattr(args, "ckpt_path", None):
+        if "3Dto2D" in args.ckpt_path:
+            CFM_3Dto2D = load_cfm(CFM_3Dto2D, args.ckpt_path)
+        elif "2Dto3D" in args.ckpt_path:
+            CFM_2Dto3D = load_cfm(CFM_2Dto3D, args.ckpt_path)
+        else:
+            print("[警告] 未识别 ckpt 文件名方向，将尝试同时载入两个默认路径。")
+            CFM_2Dto3D = load_cfm(CFM_2Dto3D, CFM_2Dto3D_path)
+            CFM_3Dto2D = load_cfm(CFM_3Dto2D, CFM_3Dto2D_path)
+    else:
+        # 原始默认方式
+        CFM_2Dto3D = load_cfm(CFM_2Dto3D, CFM_2Dto3D_path)
+        CFM_3Dto2D = load_cfm(CFM_3Dto2D, CFM_3Dto2D_path)
+
     print(CFM_3Dto2D_path)
     print(CFM_3Dto2D_path)
 
@@ -220,6 +258,9 @@ if __name__ == '__main__':
     
     parser.add_argument('--visualize_plot', default = False, action = 'store_true',
                         help = 'Whether to show plot or not.')
+
+    parser.add_argument('--ckpt_path', default=None, type=str,
+                        help='(Optional) Direct path to a single checkpoint file to load.')
     
     parser.add_argument('--produce_qualitatives', default = False, action = 'store_true',
                         help = 'Whether to produce qualitatives or not.')
