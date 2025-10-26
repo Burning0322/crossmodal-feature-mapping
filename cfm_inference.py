@@ -124,8 +124,8 @@ def infer_CFM(args):
             cos_2d[xyz_mask] = 0.
             cos_2d = cos_2d.reshape(224,224)
             
-            #cos_comb = (cos_2d * cos_3d)
-            cos_comb = cos_2d  #  只用2D测试
+            cos_comb = (cos_2d * cos_3d)
+            #cos_comb = cos_2d  #  只用2D测试
             cos_comb.reshape(-1)[xyz_mask] = 0.
             
             # Repeated box filters to approximate a Gaussian blur.
@@ -145,7 +145,7 @@ def infer_CFM(args):
             
             # Prediction and ground-truth accumulation.
             gts.append(gt.squeeze().cpu().detach().numpy()) # * (224,224)
-            predictions.append((cos_comb / (cos_comb[cos_comb!=0].mean())).cpu().detach().numpy()) # * (224,224)
+            #predictions.append((cos_comb / (cos_comb[cos_comb!=0].mean())).cpu().detach().numpy()) # * (224,224)
             
             #gts是 真实异常掩码
             # GTs.
@@ -153,8 +153,23 @@ def infer_CFM(args):
             pixel_labels.extend(gt.flatten().cpu().detach().numpy()) # * (50176,)
 
             # Predictions.
-            image_preds.append((cos_comb / torch.sqrt(cos_comb[cos_comb!=0].mean())).cpu().detach().numpy().max()) # * number
-            pixel_preds.extend((cos_comb / torch.sqrt(cos_comb.mean())).flatten().cpu().detach().numpy()) # * (224,224)
+            #image_preds.append((cos_comb / torch.sqrt(cos_comb[cos_comb!=0].mean())).cpu().detach().numpy().max()) # * number
+            #pixel_preds.extend((cos_comb / torch.sqrt(cos_comb.mean())).flatten().cpu().detach().numpy()) # * (224,224)
+
+            # -------- Robust normalization (fix flat maps on Kaggle) --------
+            nonzero = cos_comb[cos_comb != 0]
+            mean_val = nonzero.mean()
+            std_val = nonzero.std()
+
+            # z-score normalize to retain contrast
+            pred_norm = (cos_comb - mean_val) / (std_val + 1e-8)
+            # optional: scale to [0,1] for visualization and evaluation consistency
+            pred_norm = (pred_norm - pred_norm.min()) / (pred_norm.max() - pred_norm.min() + 1e-8)
+
+            # append normalized maps
+            predictions.append(pred_norm.cpu().detach().numpy())
+            image_preds.append(pred_norm.cpu().detach().numpy().max())
+            pixel_preds.extend(pred_norm.flatten().cpu().detach().numpy())
 
             if args.produce_qualitatives:
 
