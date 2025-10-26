@@ -125,7 +125,7 @@ def infer_CFM(args):
             cos_2d = cos_2d.reshape(224,224)
             
             #cos_comb = (cos_2d * cos_3d)
-            cos_comb = cos_2d  # ← 只用2D测试
+            cos_comb = cos_2d  #  只用2D测试
             cos_comb.reshape(-1)[xyz_mask] = 0.
             
             # Repeated box filters to approximate a Gaussian blur.
