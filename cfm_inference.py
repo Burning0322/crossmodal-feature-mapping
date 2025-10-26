@@ -124,8 +124,8 @@ def infer_CFM(args):
             cos_2d[xyz_mask] = 0.
             cos_2d = cos_2d.reshape(224,224)
             
-            #cos_comb = (cos_2d * cos_3d)
-            cos_comb = cos_2d  #  只用2D测试
+            cos_comb = (cos_2d * cos_3d)
+            #cos_comb = cos_2d  #  只用2D测试
             cos_comb.reshape(-1)[xyz_mask] = 0.
             
             # Repeated box filters to approximate a Gaussian blur.
@@ -143,18 +143,37 @@ def infer_CFM(args):
             
             cos_comb = cos_comb.reshape(224,224)
             
+            # # Prediction and ground-truth accumulation.
+            # gts.append(gt.squeeze().cpu().detach().numpy()) # * (224,224)
+            # predictions.append((cos_comb / (cos_comb[cos_comb!=0].mean())).cpu().detach().numpy()) # * (224,224)
+            #
+            # #gts是 真实异常掩码
+            # # GTs.
+            # image_labels.append(label) # * (1,)
+            # pixel_labels.extend(gt.flatten().cpu().detach().numpy()) # * (50176,)
+            #
+            # # Predictions.
+            # image_preds.append((cos_comb / torch.sqrt(cos_comb[cos_comb!=0].mean())).cpu().detach().numpy().max()) # * number
+            # pixel_preds.extend((cos_comb / torch.sqrt(cos_comb.mean())).flatten().cpu().detach().numpy()) # * (224,224)
+
             # Prediction and ground-truth accumulation.
-            gts.append(gt.squeeze().cpu().detach().numpy()) # * (224,224)
-            predictions.append((cos_comb / (cos_comb[cos_comb!=0].mean())).cpu().detach().numpy()) # * (224,224)
-            
-            #gts是 真实异常掩码
+            gts.append(gt.squeeze().cpu().detach().numpy())  # * (224,224)
+
+            # Z-score 标准化
+            mean_val = cos_comb[cos_comb != 0].mean()
+            std_val = cos_comb[cos_comb != 0].std()
+            pred_norm = (cos_comb - mean_val) / (std_val + 1e-8)  # 防止除以零
+            pred_norm = torch.clamp(pred_norm, min=-3, max=3)  # 限制范围，防止极端值
+            predictions.append(pred_norm.cpu().detach().numpy())  # * (224,224)
+
             # GTs.
-            image_labels.append(label) # * (1,)
-            pixel_labels.extend(gt.flatten().cpu().detach().numpy()) # * (50176,)
+            image_labels.append(label)  # * (1,)
+            pixel_labels.extend(gt.flatten().cpu().detach().numpy())  # * (50176,)
 
             # Predictions.
-            image_preds.append((cos_comb / torch.sqrt(cos_comb[cos_comb!=0].mean())).cpu().detach().numpy().max()) # * number
-            pixel_preds.extend((cos_comb / torch.sqrt(cos_comb.mean())).flatten().cpu().detach().numpy()) # * (224,224)
+            image_preds.append(pred_norm.cpu().detach().numpy().max())  # * number
+            pixel_preds.extend(pred_norm.flatten().cpu().detach().numpy())  # * (50176,)
+
 
             if args.produce_qualitatives:
 
