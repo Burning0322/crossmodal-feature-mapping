@@ -45,6 +45,9 @@ def infer_CFM(args):
     CFM_2Dto3D.load_state_dict(torch.load(CFM_2Dto3D_path))
     CFM_3Dto2D.load_state_dict(torch.load(CFM_3Dto2D_path))
 
+    print(CFM_3Dto2D_path)
+    print(CFM_3Dto2D_path)
+
     CFM_2Dto3D.to(device), CFM_3Dto2D.to(device)
 
     # Make CFMs non-trainable.
